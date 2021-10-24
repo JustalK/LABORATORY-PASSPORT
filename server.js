@@ -1,0 +1,63 @@
+const express = require('express');
+const app = express();
+const session = require('express-session');
+const passport = require('passport');
+const FacebookStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const MicrosoftStrategy = require('passport-microsoft').Strategy;
+const routes = require('./routes.js');
+const config = require('./config')
+
+app.set('view engine', 'ejs');
+
+app.use(session({
+  resave: false,
+  saveUninitialized: true,
+  secret: 'SECRET'
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function (obj, cb) {
+  cb(null, obj);
+});
+
+passport.use(new FacebookStrategy({
+    clientID: config.facebookAuth.clientID,
+    clientSecret: config.facebookAuth.clientSecret,
+    callbackURL: config.facebookAuth.callbackURL
+  }, function (accessToken, refreshToken, profile, done) {
+    return done(null, profile);
+  }
+));
+
+passport.use(new GoogleStrategy({
+    clientID: config.googleAuth.clientID,
+    clientSecret: config.googleAuth.clientSecret,
+    callbackURL: config.googleAuth.callbackURL
+  }, function (accessToken, refreshToken, profile, done) {
+    return done(null, profile);
+  }
+));
+
+passport.use(new MicrosoftStrategy({
+    clientID: config.microsoftAuth.clientID,
+    clientSecret: config.microsoftAuth.clientSecret,
+    callbackURL: config.microsoftAuth.callbackURL
+  }, function (accessToken, refreshToken, profile, done) {
+    return done(null, profile);
+  }
+));
+
+app.use('/', routes);
+
+const port = 3000;
+
+app.listen(port, () => {
+  console.log('App listening on port ' + port);
+});
