@@ -7,6 +7,7 @@ router.get('/', function (req, res) {
 });
 
 router.get('/profile', isLoggedIn, function (req, res) {
+  console.log(req);
   res.render('pages/profile.ejs', {
     user: req.user // get the user out of session and pass to template
   });
